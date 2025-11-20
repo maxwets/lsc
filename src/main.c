@@ -5,7 +5,7 @@
 #include "helper.h"
 
 INT
-mainCRTStartup(VOID)
+main(VOID)
 {
 	DWORD  dwError      = FALSE;
 	HANDLE hFile        = INVALID_HANDLE_VALUE;
@@ -87,7 +87,6 @@ mainCRTStartup(VOID)
 _end:
 	if (hThread) API(KERNEL32, CloseHandle)(hThread);
 	if (hFile != INVALID_HANDLE_VALUE) API(KERNEL32, CloseHandle)(hFile);
-	Print("Execution finished. Press any key to exit.\n");
-	WaitForKey();
+	PrintError("Execution finished", API(KERNEL32, GetLastError)());
 	return dwError;
 }

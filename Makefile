@@ -5,7 +5,7 @@ CC86     := i686-w64-mingw32-gcc -m32
 
 CFLAGS   += -Iinclude
 CFLAGS   += -std=c23
-CFLAGS   += -fPIC
+CFLAGS   += -fPIE
 CFLAGS   += -s
 CFLAGS   += -Os
 CFLAGS   += -Wall
@@ -37,20 +37,11 @@ LDFLAGS  += -Wl,--no-seh
 LDFLAGS  += -Wl,--disable-auto-import
 LDFLAGS  += -Wl,--no-insert-timestamp
 LDFLAGS  += -Wl,--enable-stdcall-fixup
-LDFLAGS  += -Wl,--disable-dynamicbase
 LDFLAGS  += -Wl,--strip-all
-
-LDFLAGS  += -nostartfiles
-LDFLAGS  += -nodefaultlibs
-LDFLAGS  += -nostdlib
 
 LDFLAGS  += -lgcc
 LDFLAGS  += -lmsvcrt
 LDFLAGS  += -lkernel32
-
-EP64     += -e mainCRTStartup
-EP86     += -e _mainCRTStartup
-
 
 SRCDIR   := src
 OBJDIR   := obj
@@ -71,10 +62,10 @@ x64: $(EXE64)
 x86: $(EXE86)
 
 $(EXE64): $(OBJ64) | $(BINDIR)
-	$(CC64) $^ -o $@ $(CFLAGS) $(LDFLAGS) $(EP64)
+	$(CC64) $^ -o $@ $(CFLAGS) $(LDFLAGS)
 
 $(EXE86): $(OBJ86) | $(BINDIR)
-	$(CC86) $^ -o $@ $(CFLAGS) $(LDFLAGS) $(EP86)
+	$(CC86) $^ -o $@ $(CFLAGS) $(LDFLAGS)
 
 $(OBJDIR)/%.x64.o: $(SRCDIR)/%.c | $(OBJDIR)
 	@ mkdir -p $(dir $@)
