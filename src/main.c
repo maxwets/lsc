@@ -74,14 +74,14 @@ mainCRTStartup(VOID)
 		goto _end;
 	}
 
-	hThread = API(KERNEL32, CreateThread)(NULL, 0, (LPTHREAD_START_ROUTINE)pBaseAddress, NULL, 0, NULL);
+	hThread = API(KERNEL32, CreateThread)(NULL, 0x00, (LPTHREAD_START_ROUTINE)pBaseAddress, NULL, 0x00, NULL);
 	if (! hThread) {
 		PrintError("Failed to create thread", API(KERNEL32, GetLastError)());
 		goto _end;
 	}
 
 	API(KERNEL32, WaitForSingleObject)(hThread, INFINITE);
-	API(KERNEL32, VirtualFree)(pBaseAddress, 0, MEM_RELEASE);
+	API(KERNEL32, VirtualFree)(pBaseAddress, 0x00, MEM_RELEASE);
 
 	dwError = ERROR_SUCCESS;
 _end:

@@ -6,6 +6,7 @@ CC86     := i686-w64-mingw32-gcc -m32
 CFLAGS   += -Iinclude
 CFLAGS   += -std=c23
 CFLAGS   += -fPIC
+CFLAGS   += -s
 CFLAGS   += -Os
 CFLAGS   += -Wall
 CFLAGS   += -Werror
@@ -32,11 +33,12 @@ CFLAGS   += -falign-loops=1:0:0
 CFLAGS   += -falign-labels=1:0:0
 
 LDFLAGS  += -Wl,--gc-sections
-LDFLAGS  += -Wl,--gc-sections
-LDFLAGS  += -Wl,--gc-sections
-LDFLAGS  += -Wl,--disable-dynamicbase
 LDFLAGS  += -Wl,--no-seh
+LDFLAGS  += -Wl,--disable-auto-import
+LDFLAGS  += -Wl,--no-insert-timestamp
 LDFLAGS  += -Wl,--enable-stdcall-fixup
+LDFLAGS  += -Wl,--disable-dynamicbase
+LDFLAGS  += -Wl,--strip-all
 
 LDFLAGS  += -nostartfiles
 LDFLAGS  += -nodefaultlibs
