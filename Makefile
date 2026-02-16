@@ -4,7 +4,7 @@ CC64     := x86_64-w64-mingw32-gcc -m64
 CC86     := i686-w64-mingw32-gcc -m32
 
 CFLAGS   += -Iinclude
-CFLAGS   += -std=c23
+CFLAGS   += -std=c11
 CFLAGS   += -fPIE
 CFLAGS   += -s
 CFLAGS   += -Os

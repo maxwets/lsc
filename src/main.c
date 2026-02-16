@@ -18,20 +18,25 @@ main(VOID)
 	LPWSTR pwszFilePath = NULL;
 	
 #if !defined(_WIN64) && defined(_WIN32)
-	pBaseAddress = (PVOID) 0x1400000;
+	pBaseAddress = (PVOID) 0x1000000;
 #elif defined(_WIN64)
-	pBaseAddress = (PVOID) 0x150000000;
+	pBaseAddress = (PVOID) 0x100000000;
 #endif
 
 	while (*pwszCmdLine && *pwszCmdLine != L' ') pwszCmdLine++;
 	while (*pwszCmdLine == L' ') pwszCmdLine++;
 	
 	if (!*pwszCmdLine) {
-		Print("Usage: program.exe <shellcode_path>\n");
+		Print("Usage: lsc<arch>.exe <shellcode_path>\n");
 		goto _end;
 	}
 	
 	pwszFilePath = pwszCmdLine;
+
+	if (API(KERNEL32, AddVectoredExceptionHandler)(1, ExceptionHandler) == NULL) {
+		PrintError("kernel32!AddVectoredExceptionHandler", API(KERNEL32, GetLastError)());
+		goto _end;
+	}
 
 	hFile = API(KERNEL32, CreateFileW)(
 		pwszFilePath,
@@ -43,26 +48,26 @@ main(VOID)
 		NULL);
 
 	if (hFile == INVALID_HANDLE_VALUE) {
-		PrintError("Failed to open file", API(KERNEL32, GetLastError)());
+		PrintError("kernel32!CreateFileW", API(KERNEL32, GetLastError)());
 		goto _end;
 	}
 
 	dwFileSize = API(KERNEL32, GetFileSize)(hFile, NULL);
 	if (dwFileSize == INVALID_FILE_SIZE) {
-		PrintError("Failed to get file size", API(KERNEL32, GetLastError)());
+		PrintError("kernel32!GetFileSize", API(KERNEL32, GetLastError)());
 		goto _end;
 	}
 
 	pBaseAddress = API(KERNEL32, VirtualAlloc)(pBaseAddress, dwFileSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	if (! pBaseAddress) {
-		PrintError("Failed to allocate at target address", API(KERNEL32, GetLastError)());
+		PrintError("kernel32!VirtualAlloc", API(KERNEL32, GetLastError)());
 		goto _end;
 	}
 	
-	PrintHex(pBaseAddress);
+	PrintF("Base Address:\t%p\n", pBaseAddress);
 
 	if (! API(KERNEL32, ReadFile)(hFile, pBaseAddress, dwFileSize, &dwBytesRead, NULL)) {
-		PrintError("Failed to read file", API(KERNEL32, GetLastError)());
+		PrintError("kernel32!ReadFile", API(KERNEL32, GetLastError)());
 		goto _end;
 	}
 
@@ -70,13 +75,13 @@ main(VOID)
 	WaitForKey();
 
 	if (! API(KERNEL32, VirtualProtect)(pBaseAddress, PAGE_ALIGN(dwFileSize), PAGE_EXECUTE_READ, &dwOldProt)) {
-		PrintError("Failed to set memory protections", API(KERNEL32, GetLastError)());
+		PrintError("kernel32!VirtualProtect", API(KERNEL32, GetLastError)());
 		goto _end;
 	}
 
 	hThread = API(KERNEL32, CreateThread)(NULL, 0x00, (LPTHREAD_START_ROUTINE)pBaseAddress, NULL, 0x00, NULL);
 	if (! hThread) {
-		PrintError("Failed to create thread", API(KERNEL32, GetLastError)());
+		PrintError("kernel32!CreateThread", API(KERNEL32, GetLastError)());
 		goto _end;
 	}
 

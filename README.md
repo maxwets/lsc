@@ -1,13 +1,14 @@
-# LSC
+# LSC - Load Shellcode
 ---
 
-Simple shellcode loader.
-Always loads the shellcode at the same address:
+Always loads the shellcode at the same address.
+Sometimes the desired address is already committed, in this case just restart the program.
+The program also registers a Vectored Exception Handler that prints the error, registers and stack in case an exception occurs.
 
 |Architecture|Address|
 |---|---|
-|`x64`|`0x150000000`|
-|`x86`|`0x1400000`|
+|`x64`|`0x100000000`|
+|`x86`|`0x1000000`|
 
 ## Usage
 ```powershell

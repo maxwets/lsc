@@ -9,10 +9,12 @@
 #define INLINE        __attribute__((__always_inline__))
 #define NOINLINE      __attribute__((__noinline__))
 
-PPEB GetPeb(VOID);
-VOID Print(LPCSTR pszMessage);
-VOID PrintHex(PVOID pAddress);
-VOID PrintError(LPCSTR pszMessage, DWORD dwError);
-VOID WaitForKey(VOID);
+PPEB        GetPeb(VOID);
+VOID        Print(_In_ LPCSTR pszMessage);
+VOID        PrintF(_In_ LPCSTR szFormat, ...);
+VOID        PrintError(_In_ LPCSTR pszMessage, _In_ DWORD dwError);
+PCHAR       GetExceptionName(_In_ DWORD dwExceptionCode);
+VOID        WaitForKey(VOID);
+LONG WINAPI ExceptionHandler(_In_ PEXCEPTION_POINTERS pExceptionInfo);
 
 #endif // _LSC_HELPER_H
